@@ -8,6 +8,8 @@ const details = document.querySelector('.details');
 const time = document.querySelector('img.time');
 const icon = document.querySelector('.icon img');
 
+const forecast = new Forecast();
+
 /* 
     Events
 */
@@ -19,7 +21,7 @@ cityForm.addEventListener('submit', e => {
     cityForm.reset();
 
     // update the ui with new city
-    updateCity(city)
+    forecast.updateCity(city)
         .then(data => updateUI(data))
         .catch(err => console.log(err));
 
@@ -29,7 +31,7 @@ cityForm.addEventListener('submit', e => {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('city')) {
-        updateCity(localStorage.getItem('city'))
+        forecast.updateCity(localStorage.getItem('city'))
             .then(data => updateUI(data))
             .catch(err => console.log(err));
     }
@@ -38,19 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
 /* 
     Functions
 */
-
-const updateCity = async (city) => {
-
-    const cityDetails = await getCity(city);
-    const weather = await getWather(cityDetails.Key);
-
-    return {
-        // Does the exactly same thing as, because we're just saying to presuming that the property name is the same as the variable name.
-        cityDetails,
-        weather
-    };
-
-}
 
 const updateUI = (data) => {
 
@@ -62,10 +51,10 @@ const updateUI = (data) => {
     // destructure properties: make the same thing as above, but in a more elegant way
     // The constants must be the same name as the properties that we're getting from the object
     const { cityDetails, weather } = data;
-
     // update details template
     details.innerHTML = `
-        <h5 class="my-3 h2">${cityDetails.LocalizedName}</h5>
+        <div class="mt-3">${cityDetails.Country.LocalizedName}</div>
+        <h5 class="mb-3 h2">${cityDetails.LocalizedName}/${cityDetails.AdministrativeArea.ID}</h5>
         <div class="my-3">${weather.WeatherText}</div>
         <div class="display-4 my-4">
             <span>${weather.Temperature.Metric.Value}</span><span>&deg;C</span>
